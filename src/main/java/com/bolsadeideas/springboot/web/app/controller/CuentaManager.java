@@ -14,7 +14,7 @@ public class CuentaManager {
     private static final String SQL_INSERT = "INSERT INTO cuenta (idinscripcion, monto, fecha, pagos, fechavencimiento) VALUES (?,?,?,?,?)";
     private static final String SQL = "SELECT * FROM cuenta";
     private static final String SQL_DELETE = "DELETE FROM cuenta WHERE idcuenta=?";
-    private static final String SQL_MODIFY = "UPDATE cuenta SET monto=?, fecha=?, pagos=? WHERE idcuenta=?";
+    private static final String SQL_MODIFY = "UPDATE cuenta SET monto=?, fechavencimiento=?, pagos=? WHERE idcuenta=?";
     private static final int Monto=480000;
     private static final byte Pagos=0;  //Pagos llega hasta 4 cuotas por semestre.
 
@@ -31,7 +31,7 @@ public class CuentaManager {
                 cuenta.setIdcuenta(resultSet.getInt("idcuenta"));
                 cuenta.setIdinscripcion(resultSet.getInt("idinscripcion"));
                 cuenta.setFecha(resultSet.getTimestamp("fecha"));
-                cuenta.setfechavencimiento(resultSet.getTimestamp("fechavencimiento"));
+                cuenta.setFechavencimiento(resultSet.getTimestamp("fechavencimiento"));
                 cuenta.setMonto(resultSet.getInt("monto"));
                 cuenta.setPagos(resultSet.getByte("pagos"));
                 lista.add(cuenta);
@@ -67,12 +67,11 @@ public class CuentaManager {
 
             try (ResultSet generatedKeys = preparestatement.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
-
                     cuenta.setIdinscripcion(idinscripcion);
                     cuenta.setMonto(Monto);
                     cuenta.setFecha(fecha);
                     cuenta.setPagos(Pagos);
-                    cuenta.setfechavencimiento(fechavencimiento);
+                    cuenta.setFechavencimiento(fechavencimiento);
                     cuenta.setIdcuenta(generatedKeys.getInt(1));
                     return cuenta;
                 } else {
@@ -85,8 +84,8 @@ public class CuentaManager {
         }
 
     }
-
-    public void delete(int idCursoHabilitado) {
+    //Si no se puede eliminar retorna flase, en caso contrario true si se pudo y tambien si no se encuentra en la base de datos
+    public boolean delete(int idCursoHabilitado) {
 
         try (Connection conn = ConnectionManager.getConnection();
              PreparedStatement preparestatement = conn.prepareStatement(SQL_DELETE)) {
@@ -97,20 +96,21 @@ public class CuentaManager {
 
         } catch (SQLException e) {
             System.err.format("SQL State: %s\n%s", e.getSQLState(), e.getMessage());
+            return false;
         }
-
+        return true;
     }
 
-    public void modify(int idcuenta, int idinscripcion, Timestamp fecha, Timestamp fechavencimiento, int monto, byte pagos){
+    public void modify(int idcuenta,Timestamp fechavencimiento, int monto, byte pagos){
         try(Connection conn = ConnectionManager.getConnection();
             PreparedStatement preparestatement = conn.prepareStatement(SQL_MODIFY)){
 
-            preparestatement.setInt(1, idinscripcion);
-            preparestatement.setTimestamp(2, fecha);
-            preparestatement.setTimestamp(3, fechavencimiento);
-            preparestatement.setInt(4, monto);
-            preparestatement.setByte(5, pagos);
-            preparestatement.setInt(1, idcuenta);
+
+
+            preparestatement.setInt(1, monto);
+            preparestatement.setTimestamp(2, fechavencimiento);
+            preparestatement.setByte(3, pagos);
+            preparestatement.setInt(4, idcuenta);
 
             preparestatement.executeUpdate();
 
@@ -133,7 +133,7 @@ public class CuentaManager {
                     Cuenta cuenta = new Cuenta();
                     cuenta.setIdcuenta(resultSet.getInt("idcuenta"));
                     cuenta.setIdinscripcion(resultSet.getInt("idinscripcion"));
-                    cuenta.setfechavencimiento(resultSet.getTimestamp("fechavencimiento"));
+                    cuenta.setFechavencimiento(resultSet.getTimestamp("fechavencimiento"));
                     cuenta.setFecha(resultSet.getTimestamp("fecha"));
                     cuenta.setMonto(resultSet.getInt("monto"));
                     cuenta.setPagos(resultSet.getByte("pagos"));
@@ -158,9 +158,9 @@ public class CuentaManager {
         return date1;
     }
 
-    public Timestamp FechaVencimiento(Date date1){
-        Timestamp date2 = new Timestamp(System.currentTimeMillis());
-        date2.setMonth(date1.getMonth()+1);
-        return date2;
+
+    public int sacarCuentaConstante(){
+        return Monto;
     }
+
 }

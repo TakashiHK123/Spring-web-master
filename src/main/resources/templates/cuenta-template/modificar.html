@@ -17,21 +17,6 @@
 			</div>
 			<div th:if="${error != null && error.containsKey('idcuenta')}" th:number="${error.idcuenta}"></div>
 
-		</div>		
-		<div>
-			<label for="idinscripcion">ID Inscripcion</label>
-			<div>
-				<input type="number" name="idinscripcion" id="idinscripcion" th:value="${cuenta.idinscripcion}">
-			</div>
-			<div th:if="${error != null && error.containsKey('idinscripcion')}" th:number="${error.idinscripcion}"></div>
-
-		</div>
-		<div>
-			<label for="fecha">Fecha</label>
-			<div>
-				<input type="number" name="fecha" id="fecha" th:value="${cuenta.fecha}">
-			</div>
-			<div th:if="${error != null && error.containsKey('fecha')}" th:number="${error.fecha}"></div>
 		</div>
 		<div>
 			<label for="fechavencimiento">Fecha Vencimiento</label>

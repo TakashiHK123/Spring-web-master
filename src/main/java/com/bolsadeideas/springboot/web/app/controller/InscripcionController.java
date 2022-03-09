@@ -59,8 +59,7 @@ public class InscripcionController {
         Timestamp date = new Timestamp(System.currentTimeMillis());
         date = cuentaManager.sacarFecha();
         Timestamp date1 = new Timestamp(System.currentTimeMillis());
-        //date1.setMonth(date.getMonth()+1);
-        date1 = cuentaManager.FechaVencimiento(date);
+        date1.setMonth(date.getMonth()+1);
         Cuenta cuenta = new Cuenta();
         cuenta = cuentaManager.add(inscripcion.getIdinscripcion(), date, date1);     //Una ves agregado la inscripcion sacamos el id inscripcion y generamos la cuenta
         model.addAttribute("idinscripcion", "ID Inscripcion");
@@ -68,11 +67,8 @@ public class InscripcionController {
         model.addAttribute("idalumno", "ID Alumno");
         model.addAttribute("titulo", "Inscripciones");
         model.addAttribute("idcuenta", "ID Cuenta");
-        model.addAttribute("fecha", "Fecha");
-        model.addAttribute("fechavencimiento", "Fecha Vencimiento");
-        model.addAttribute("monto", "Monto");
+        model.addAttribute("idcuentaMensaje", cuenta.getIdcuenta());
         model.addAttribute("inscripcion", inscripcion);
-        model.addAttribute("cuenta", cuenta);
         return "inscripcion-template/resultado";
     }
     @GetMapping("/buscar")
@@ -140,6 +136,54 @@ public class InscripcionController {
         model.addAttribute("idcursohabilitado", "idcursohabilitado");
         model.addAttribute("idmateria", "idmateria");
         model.addAttribute("inscripcion", inscripcion);
+        return "inscripcion-template/resultado";
+    }
+
+    @GetMapping("/eliminar")
+    public String eliminarInscripcion(Model model) {
+        Inscripcion inscripcion = new Inscripcion();
+        model.addAttribute("titulo", "Elminar la inscripcion");
+        model.addAttribute("inscripcion", inscripcion);
+        model.addAttribute("error", new HashMap<>());
+        return "inscripcion-template/eliminar";
+    }
+
+    @PostMapping("/eliminar")
+    public String eliminarInscricionPro(@Valid Inscripcion inscripcion, BindingResult result, Model model,
+                                      @RequestParam(name= "idinscripcion") int idinscripcion) throws SQLException {
+        if(result.hasGlobalErrors()) {
+            Map<String, String> errores = new HashMap<>();
+            result.getFieldErrors().forEach(err ->{
+                errores.put(err.getField(), "El campo ".concat(err.getField()).concat(" ").concat(err.getDefaultMessage()));
+            });
+            model.addAttribute("titulo", "Debe ser numero entero");
+            model.addAttribute("error", errores);
+            return "inscripcion-template/eliminar";
+        }
+        InscripcionManager inscripcionManager = new InscripcionManager();
+        inscripcion = inscripcionManager.getByid(idinscripcion);
+        if(inscripcionManager.delete(idinscripcion)==false){
+            model.addAttribute("idinscripcion", "ID Inscripcion");
+            model.addAttribute("idcursohabilitado", "ID Curso Habilitado");
+            model.addAttribute("idalumno", "ID Alumno");
+            model.addAttribute("titulo", "No se puede eliminar, esta referido a otra base de datos la inscripcion.");
+            model.addAttribute("inscripcion", inscripcion);
+        }else{
+            if(inscripcion==null){
+                model.addAttribute("idinscripcion", "");
+                model.addAttribute("idcursohabilitado", "");
+                model.addAttribute("idalumno", "");
+                model.addAttribute("titulo", "No se encuentra la inscripcion");
+                model.addAttribute("inscripcion", inscripcion);
+            }
+            else{
+                model.addAttribute("idinscripcion", "ID Inscripcion");
+                model.addAttribute("idcursohabilitado", "ID Curso Habilitado");
+                model.addAttribute("idalumno", "ID Alumno");
+                model.addAttribute("titulo", "Inscripto");
+                model.addAttribute("inscripcion", inscripcion);
+            }
+        }
         return "inscripcion-template/resultado";
     }
 }

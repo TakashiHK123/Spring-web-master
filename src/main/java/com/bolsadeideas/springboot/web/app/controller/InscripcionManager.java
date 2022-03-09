@@ -75,8 +75,8 @@ public class InscripcionManager {
         }
 
     }
-
-    public void delete(int idinscripcion) {
+    //Si no se puede eliminar retorna flase, en caso contrario true si se pudo y tambien si no se encuentra en la base de datos
+    public boolean delete(int idinscripcion) {
 
         try (Connection conn = ConnectionManager.getConnection();
              PreparedStatement preparestatement = conn.prepareStatement(SQL_DELETE)) {
@@ -87,8 +87,9 @@ public class InscripcionManager {
 
         } catch (SQLException e) {
             System.err.format("SQL State: %s\n%s", e.getSQLState(), e.getMessage());
+            return false;
         }
-
+        return true;
     }
 
     public void modify(int idinscripcion, int idcursohabilitado, int idalumno){

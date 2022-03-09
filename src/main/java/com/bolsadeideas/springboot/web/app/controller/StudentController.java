@@ -159,12 +159,32 @@ public class StudentController {
 		}
 		StudentManager studentManager = new StudentManager();
 		alumno1 = studentManager.getByid(idAlumno);
-		model.addAttribute("idAlumno", "IdAlumno");
-		model.addAttribute("nombre", "Nombre");
-		model.addAttribute("apellido", "Apellido");
-		model.addAttribute("titulo", "Alumno Eliminado");
-		model.addAttribute("alumno", alumno1);
-		studentManager.delete(idAlumno);
+		if(studentManager.delete(idAlumno)==false){
+			model.addAttribute("idAlumno", " ");
+			model.addAttribute("nombre", " ");
+			model.addAttribute("apellido", " ");
+			model.addAttribute("titulo", "El alumno no se puede eliminar esta referido a otra base de datos");
+			model.addAttribute("alumno", alumno1);
+
+		}else{
+			if(alumno1==null){
+				model.addAttribute("idAlumno", " ");
+				model.addAttribute("nombre", " ");
+				model.addAttribute("apellido", " ");
+				model.addAttribute("titulo", "El alumno no se encuentra en la base de datos");
+				model.addAttribute("alumno", alumno1);
+			}
+			else{
+				model.addAttribute("idAlumno", "IdAlumno");
+				model.addAttribute("nombre", "Nombre");
+				model.addAttribute("apellido", "Apellido");
+				model.addAttribute("titulo", "Alumno Eliminado");
+				model.addAttribute("alumno", alumno1);
+			}
+
+
+		}
+
 		return "alumno-template/resultadoEliminado";
 
 	}

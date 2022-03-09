@@ -133,4 +133,59 @@ public class ProfessorController {
         return "profesor-template/resultadoProfe";
     }
 
+    @GetMapping("/eliminar")
+    public String eliminarProfe(Model model) {
+        Profesor profesor = new Profesor();
+        model.addAttribute("titulo", "Profesor a eliminar");
+        model.addAttribute("profesor", profesor);
+        model.addAttribute("error", new HashMap<>());
+        return "profesor-template/eliminar";
+    }
+
+    @PostMapping("/eliminar")
+    public String eliminarProfePro(@Valid Profesor profesor, BindingResult result, Model model,
+                                 @RequestParam(name= "idprofesor") int idProfesor) throws SQLException {
+
+        if(result.hasGlobalErrors()) {
+            Map<String, String> errores = new HashMap<>();
+            result.getFieldErrors().forEach(err ->{
+                errores.put(err.getField(), "El campo ".concat(err.getField()).concat(" ").concat(err.getDefaultMessage()));
+            });
+            model.addAttribute("titulo", "Debe ser numero entero");
+            model.addAttribute("error", errores);
+            return "profesor-template/eliminar";
+        }
+        ProfessorManager profesorManager = new ProfessorManager();
+        profesor = profesorManager.getByid(idProfesor);
+        if(profesorManager.delete(idProfesor)==false){
+            model.addAttribute("titulo","El profesor esta referido en la base de datos, no se puede eliminar");
+            model.addAttribute("idprofesor", "IdProfesor");
+            model.addAttribute("nombre", "Nombre");
+            model.addAttribute("apellido", "Apellido");
+            model.addAttribute("profesor", profesor);
+
+
+        }else{
+            if(profesor==null){
+                model.addAttribute("titulo","El profesor no se encuentra en la base de datos");
+                model.addAttribute("idprofesor", " ");
+                model.addAttribute("nombre", " ");
+                model.addAttribute("apellido", " ");
+                model.addAttribute("profesor", profesor);
+            }
+            else{
+                model.addAttribute("idprofesor", "IdProfesor");
+                model.addAttribute("nombre", "Nombre");
+                model.addAttribute("apellido", "Apellido");
+                model.addAttribute("titulo", "Profesor Eliminado");
+                model.addAttribute("profesor", profesor);
+            }
+
+
+        }
+
+        return "profesor-template/resultadoProfe";
+
+    }
+
 }

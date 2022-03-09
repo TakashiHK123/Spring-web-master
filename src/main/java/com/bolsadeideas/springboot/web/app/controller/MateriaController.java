@@ -122,4 +122,50 @@ public class MateriaController {
         model.addAttribute("materia", materia);
         return "materia-template/resultado";
     }
+
+    @GetMapping("/eliminar")
+    public String eliminarMateria(Model model) {
+        Materia materia = new Materia();
+        model.addAttribute("titulo", "Materia a eliminar");
+        model.addAttribute("materia", materia);
+        model.addAttribute("error", new HashMap<>());
+        return "materia-template/eliminar";
+    }
+
+    @PostMapping("/eliminar")
+    public String eliminarMateriaPro(@Valid Materia materia, BindingResult result, Model model,
+                                   @RequestParam(name= "idmateria") int idmateria) throws SQLException {
+
+        if(result.hasGlobalErrors()) {
+            Map<String, String> errores = new HashMap<>();
+            result.getFieldErrors().forEach(err ->{
+                errores.put(err.getField(), "El campo ".concat(err.getField()).concat(" ").concat(err.getDefaultMessage()));
+            });
+            model.addAttribute("titulo", "Debe ser numero entero");
+            model.addAttribute("error", errores);
+            return "materia-template/eliminar";
+        }
+        MateriaManager materiaManager = new MateriaManager();
+        materia = materiaManager.getByid(idmateria);
+        if(materiaManager.delete(idmateria)==false){
+            model.addAttribute("idmateria", "ID Materia");
+            model.addAttribute("descripcion", "Descripcion");
+            model.addAttribute("titulo", "No se puede eliminar la materia, esta referido a otra base de datos");
+            model.addAttribute("materia", materia);
+        }else{
+            if(materia==null){
+                model.addAttribute("idmateria", "ID Materia");
+                model.addAttribute("descripcion", "Descripcion");
+                model.addAttribute("titulo", "No se encuentra el id de la materia");
+                model.addAttribute("materia", materia);
+            }
+            else{
+                model.addAttribute("idmateria", "ID Materia");
+                model.addAttribute("descripcion", "Descripcion");
+                model.addAttribute("titulo", "Materia Eliminado");
+                model.addAttribute("materia", materia);
+            }
+        }
+        return "materia-template/resultado";
+    }
 }

@@ -135,4 +135,55 @@ public class CursoHabilitadoController {
         model.addAttribute("cursohabilitado", cursohabilitado);
         return "cursohabilitado-template/resultado";
     }
+
+    @GetMapping("/eliminar")
+    public String eliminar(Model model) {
+        CursoHabilitado cursohabilitado = new CursoHabilitado();
+        model.addAttribute("titulo", "Buscar Curso Habilitado");
+        model.addAttribute("cursohabilitado", cursohabilitado);
+        model.addAttribute("error", new HashMap<>());
+        return "cursohabilitado-template/eliminar";
+    }
+
+    @PostMapping("/eliminar")
+    public String eliminarPro(@Valid CursoHabilitado cursohabilitado, BindingResult result, Model model,
+                            @RequestParam(name= "idcursohabilitado") int idcursohabilitado) throws SQLException {
+
+        if(result.hasGlobalErrors()) {
+            Map<String, String> errores = new HashMap<>();
+            result.getFieldErrors().forEach(err ->{
+                errores.put(err.getField(), "El campo ".concat(err.getField()).concat(" ").concat(err.getDefaultMessage()));
+            });
+            model.addAttribute("titulo", "Debe ser numero entero");
+            model.addAttribute("error", errores);
+            return "cursohabilitado-template/eliminar";
+        }
+        CursoHabilitadoManager cursohabilitadoManager = new CursoHabilitadoManager();
+        cursohabilitado = cursohabilitadoManager.getByid(idcursohabilitado);
+        if(cursohabilitadoManager.delete(idcursohabilitado)==false){
+            model.addAttribute("idcursohabilitado", "ID Curso Habilitado");
+            model.addAttribute("idcurso", "ID Curso");
+            model.addAttribute("idmateria", "ID Materia");
+            model.addAttribute("titulo", "El curso no se puede eliminar, esta referido a otra base de datos");
+            model.addAttribute("cursohabilitado", cursohabilitado);
+        }else{
+            if(cursohabilitado==null){
+                model.addAttribute("idcursohabilitado", " ");
+                model.addAttribute("idcurso", " ");
+                model.addAttribute("idmateria", " ");
+                model.addAttribute("titulo", "El curso no se encuentra en la base de datos");
+                model.addAttribute("cursohabilitado", cursohabilitado);
+            }
+            else{
+                model.addAttribute("idcursohabilitado", "ID Curso Habilitado");
+                model.addAttribute("idcurso", "ID Curso");
+                model.addAttribute("idmateria", "ID Materia");
+                model.addAttribute("titulo", "El curso esta habilitado");
+                model.addAttribute("cursohabilitado", cursohabilitado);
+            }
+        }
+
+        return "cursohabilitado-template/resultado";
+
+    }
 }

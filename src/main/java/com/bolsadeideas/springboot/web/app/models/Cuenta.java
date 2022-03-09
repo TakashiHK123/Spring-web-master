@@ -20,18 +20,18 @@ public class Cuenta {
     @NotNull
     private byte Pagos;
     @NotNull
-    private Timestamp fechavencimiento;
+    private Timestamp Fechavencimiento;
 
     public Cuenta() {
     }
 
-    public Cuenta(@NotNull int idcuenta, @NotNull int idinscripcion, @NotNull int monto, @NotNull Timestamp fecha, @NotNull byte pagos, @NotNull Timestamp fechavencimiento) {
+    public Cuenta(@NotNull int idcuenta, @NotNull int idinscripcion, @NotNull int monto, @NotNull Timestamp fecha, @NotNull byte pagos, @NotNull Timestamp Fechavencimiento) {
         this.idcuenta = idcuenta;
         this.idinscripcion = idinscripcion;
         this.monto = monto;
         this.fecha = fecha;
         this.Pagos = pagos;
-        this.fechavencimiento = fechavencimiento;
+        this.Fechavencimiento = Fechavencimiento;
     }
 
     public int getIdcuenta() {
@@ -74,12 +74,12 @@ public class Cuenta {
         Pagos = pagos;
     }
 
-    public Timestamp getfechavencimiento() {
-        return fechavencimiento;
+    public Timestamp getFechavencimiento() {
+        return Fechavencimiento;
     }
 
-    public void setfechavencimiento(Timestamp fechavencimiento) {
-        this.fechavencimiento = fechavencimiento;
+    public void setFechavencimiento(Timestamp fechavencimiento) {
+        this.Fechavencimiento = fechavencimiento;
     }
 
     @Override
@@ -90,7 +90,7 @@ public class Cuenta {
                 ", monto=" + monto +
                 ", fecha=" + fecha +
                 ", Pagos=" + Pagos +
-                ", fechavencimiento=" + fechavencimiento +
+                ", fechavencimiento=" + Fechavencimiento +
                 '}'+"\n";
     }
 }

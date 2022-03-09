@@ -74,8 +74,8 @@ public class ProfessorManager {
         }
 
     }
-
-    public void delete(int idProfe) {
+    //Si no se puede eliminar retorna flase, en caso contrario true si se pudo y tambien si no se encuentra en la base de datos
+    public boolean delete(int idProfe) {
 
         try (Connection conn = ConnectionManager.getConnection();
              PreparedStatement preparestatement = conn.prepareStatement(SQL_DELETE)) {
@@ -86,8 +86,9 @@ public class ProfessorManager {
 
         } catch (SQLException e) {
             System.err.format("SQL State: %s\n%s", e.getSQLState(), e.getMessage());
+            return false;
         }
-
+        return true;
     }
 
     public void modify(int idProfe, String nombre, String apellido){

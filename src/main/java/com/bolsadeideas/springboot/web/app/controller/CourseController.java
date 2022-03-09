@@ -123,5 +123,53 @@ public class CourseController {
             return "curso-template/resultado";
         }
 
+    @GetMapping("/eliminar")
+    public String eliminarCurso(Model model) {
+        Curso curso = new Curso();
+        model.addAttribute("titulo", "Buscar curso");
+        model.addAttribute("curso", curso);
+        model.addAttribute("error", new HashMap<>());
+        return "curso-template/eliminar";
+    }
+
+    @PostMapping("/eliminar")
+    public String eliminarCursoPro(@Valid Curso curso, BindingResult result, Model model,
+                                 @RequestParam(name= "idcurso") int idcurso) throws SQLException {
+
+        if(result.hasGlobalErrors()) {
+            Map<String, String> errores = new HashMap<>();
+            result.getFieldErrors().forEach(err ->{
+                errores.put(err.getField(), "El campo ".concat(err.getField()).concat(" ").concat(err.getDefaultMessage()));
+            });
+            model.addAttribute("titulo", "Debe ser numero entero");
+            model.addAttribute("error", errores);
+            return "curso-template/eliminar";
+        }
+        CourseManager cursoManager = new CourseManager();
+        curso = cursoManager.getByid(idcurso);
+        if(cursoManager.delete(idcurso)==false){
+            model.addAttribute("idcurso", "Idcurso");
+            model.addAttribute("descripcion", "descripcion");
+            model.addAttribute("titulo", "No se pude eliminar, el curso esta referido a otra base de datos");
+            model.addAttribute("curso", curso);
+        }else{
+            if(curso==null){
+                model.addAttribute("idcurso", "");
+                model.addAttribute("descripcion", "");
+                model.addAttribute("titulo", "Curso no se encuentra en la base de datos");
+                model.addAttribute("curso", curso);
+            }
+            else{
+                model.addAttribute("idcurso", "Idcurso");
+                model.addAttribute("descripcion", "descripcion");
+                model.addAttribute("titulo", "Curso Eliminado");
+                model.addAttribute("curso", curso);
+            }
+        }
+
+        return "curso-template/resultado";
+
+    }
+
     }
 
