@@ -1,6 +1,7 @@
 package com.bolsadeideas.springboot.web.app.models;
 
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
@@ -11,10 +12,16 @@ public class CursoHabilitado implements Serializable {
     @NotNull
     private int idcursohabilitado;
     @NotNull
+    @Min(1)
+    @Max(9999999)
     private int idcurso;
     @NotNull
+    @Min(1)
+    @Max(9999999)
     private int idmateria;
     @NotNull
+    @Min(1)
+    @Max(9999999)
     private int idprofesor;
 
     public CursoHabilitado() {

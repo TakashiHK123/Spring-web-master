@@ -49,25 +49,38 @@ public class CuentaController{
     public String buscarCuentaPro(@Valid Cuenta cuenta, BindingResult result, Model model,
                             @RequestParam(name= "idcuenta") int idcuenta) throws SQLException {
 
-        if(result.hasGlobalErrors()) {
+        if(result.hasGlobalErrors() || idcuenta==0) {
             Map<String, String> errores = new HashMap<>();
             result.getFieldErrors().forEach(err ->{
                 errores.put(err.getField(), "El campo ".concat(err.getField()).concat(" ").concat(err.getDefaultMessage()));
             });
-            model.addAttribute("titulo", "Debe ser numero entero");
+            model.addAttribute("titulo", "Debe ser mayor a cero");
             model.addAttribute("error", errores);
             return "cuenta-template/buscar";
         }
         CuentaManager cuentaManager = new CuentaManager();
         cuenta = cuentaManager.getByid(idcuenta);
-        model.addAttribute("idcuenta", "ID cuenta");
-        model.addAttribute("idinscripcion", "ID Inscripcion");
-        model.addAttribute("fecha", "Fecha");
-        model.addAttribute("fechavencimiento", "Fecha Vencimiento");
-        model.addAttribute("monto", "Monto a Pagar");
-        model.addAttribute("pagos", "Pagos");
-        model.addAttribute("titulo","Cuenta Encontrado");
-        model.addAttribute("cuenta", cuenta);
+        if(cuenta==null){
+            model.addAttribute("idcuenta", "");
+            model.addAttribute("idinscripcion", "");
+            model.addAttribute("fecha", "");
+            model.addAttribute("fechavencimiento", "");
+            model.addAttribute("monto", "");
+            model.addAttribute("pagos", "");
+            model.addAttribute("titulo","Cuenta no encontrado");
+            model.addAttribute("cuenta", cuenta);
+        }
+        else{
+            model.addAttribute("idcuenta", "ID cuenta");
+            model.addAttribute("idinscripcion", "ID Inscripcion");
+            model.addAttribute("fecha", "Fecha");
+            model.addAttribute("fechavencimiento", "Fecha Vencimiento");
+            model.addAttribute("monto", "Monto a Pagar");
+            model.addAttribute("pagos", "Pagos");
+            model.addAttribute("titulo","Cuenta Encontrado");
+            model.addAttribute("cuenta", cuenta);
+        }
+
         return "cuenta-template/resultado";
 
     }
@@ -191,24 +204,26 @@ public class CuentaController{
     public String pagarCuentaPro(@Valid Cuenta cuenta, BindingResult result, Model model,
                                   @RequestParam(name= "idcuenta") int idcuenta,
                                   @RequestParam(name= "pagos") byte pagos) throws SQLException {
-
-        if(result.hasGlobalErrors()) {
+        CuentaManager cuentaManager = new CuentaManager();
+        cuenta = cuentaManager.getByid(idcuenta);
+        if(result.hasGlobalErrors() || pagos<=cuenta.getPagos()) {
             Map<String, String> errores = new HashMap<>();
             result.getFieldErrors().forEach(err ->{
                 errores.put(err.getField(), "El campo ".concat(err.getField()).concat(" ").concat(err.getDefaultMessage()));
             });
-            model.addAttribute("titulo", "Debe ser numero entero");
+            model.addAttribute("titulo", "Ya esta pagado la cuota");
             model.addAttribute("error", errores);
             return "cuenta-template/pagar";
         }
-        CuentaManager cuentaManager = new CuentaManager();
-        cuenta = cuentaManager.getByid(idcuenta);
         Timestamp datemodify = new Timestamp(System.currentTimeMillis());
         Timestamp date = new Timestamp(System.currentTimeMillis());
         date = cuenta.getFecha();
         datemodify.setMonth(date.getMonth()+pagos+1);
         int montoConstante = cuentaManager.sacarCuentaConstante();
         int montonew = montoConstante-pagos*(montoConstante/4);
+        if(montonew==0){
+            datemodify=null;
+        }
         cuentaManager.modify(idcuenta,datemodify,montonew,pagos);
         cuenta = cuentaManager.getByid(idcuenta);
         model.addAttribute("idcuenta", " ID cuenta");

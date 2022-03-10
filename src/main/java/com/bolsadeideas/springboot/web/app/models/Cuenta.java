@@ -1,5 +1,7 @@
 package com.bolsadeideas.springboot.web.app.models;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import org.jetbrains.annotations.NotNull;
 

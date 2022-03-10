@@ -48,7 +48,7 @@ public class InscripcionController {
         if(result.hasErrors()) {
             Map<String, String> errores = new HashMap<>();
             result.getFieldErrors().forEach(err ->{
-                errores.put(err.getField(), "El campo ".concat(err.getField()).concat(" ").concat(err.getDefaultMessage()));
+                errores.put(err.getField(), "El campo ".concat(err.getField()).concat(" ").concat("no puede estar vacio, y debe se numero entero"));
             });
             model.addAttribute("error", errores);
             return "inscripcion-template/agregar";
@@ -74,7 +74,7 @@ public class InscripcionController {
     @GetMapping("/buscar")
     public String buscarInscripcion(Model model) {
         Inscripcion inscripcion = new Inscripcion();
-        model.addAttribute("titulo", "Buscar Inscriptos");
+        model.addAttribute("titulo", "Buscar Inscripciones");
         model.addAttribute("inscripcion", inscripcion);
         model.addAttribute("error", new HashMap<>());
         return "inscripcion-template/buscar";
@@ -84,22 +84,32 @@ public class InscripcionController {
     public String buscarInscricionPro(@Valid Inscripcion inscripcion, BindingResult result, Model model,
                             @RequestParam(name= "idinscripcion") int idinscripcion) throws SQLException {
 
-        if(result.hasGlobalErrors()) {
+        if(result.hasGlobalErrors() || idinscripcion==0) {
             Map<String, String> errores = new HashMap<>();
             result.getFieldErrors().forEach(err ->{
                 errores.put(err.getField(), "El campo ".concat(err.getField()).concat(" ").concat(err.getDefaultMessage()));
             });
-            model.addAttribute("titulo", "Debe ser numero entero");
+            model.addAttribute("titulo", "Debe ser numero entero y mayor a cero");
+            model.addAttribute("inscripcion", inscripcion);
             model.addAttribute("error", errores);
             return "inscripcion-template/buscar";
         }
         InscripcionManager inscripcionManager = new InscripcionManager();
         inscripcion = inscripcionManager.getByid(idinscripcion);
-        model.addAttribute("idinscripcion", "ID Inscripcion");
-        model.addAttribute("idcursohabilitado", "ID Curso Habilitado");
-        model.addAttribute("idalumno", "ID Alumno");
-        model.addAttribute("titulo", "Inscripto");
-        model.addAttribute("inscripcion", inscripcion);
+        if(inscripcion==null){
+            model.addAttribute("idinscripcion", "");
+            model.addAttribute("idcursohabilitado", "");
+            model.addAttribute("idalumno", "");
+            model.addAttribute("titulo", "La inscripcion no se encuentra en la base de datos");
+            model.addAttribute("inscripcion", inscripcion);
+        }
+        else{
+            model.addAttribute("idinscripcion", "ID Inscripcion");
+            model.addAttribute("idcursohabilitado", "ID Curso Habilitado");
+            model.addAttribute("idalumno", "ID Alumno");
+            model.addAttribute("titulo", "Inscripcion Encontrado");
+            model.addAttribute("inscripcion", inscripcion);
+        }
         return "inscripcion-template/resultado";
 
     }

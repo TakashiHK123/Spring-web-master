@@ -13,29 +13,29 @@
 	<div>
 		<label for="idcurso">ID curso</label>
 		<div>
-			<input type="number" name="idcurso" id="idcurso" th:value="${cursohabilitado.idcurso}">
+			<input type="text" name="idcurso" id="idcurso" th:value="${cursohabilitado.idcurso}">
 		</div>
-		<div th:if="${error != null && error.containsKey('idcurso')}" th:text="${error.idcurso}"></div>
+		<div th:if="${errores != null && errores.containsKey('idcurso')}" th:text="${errores.idcurso}"></div>
 		</div>
 
 	</div>
 	<div>
 		<label for="idmateria">ID Materia</label>
 		<div>
-			<input type="number" name="idmateria" id="idmateria" th:value="${cursohabilitado.idmateria}">
+			<input type="text" name="idmateria" id="idmateria" th:value="${cursohabilitado.idmateria}">
 		</div>
-		<div th:if="${error != null && error.containsKey('idmateria')}" th:text="${error.idmateria}"></div>
+		<div th:if="${errores != null && errores.containsKey('idmateria')}" th:text="${errores.idmateria}"></div>
 	</div>
 	<div>
 		<label for="idprofesor">ID Profesor</label>
 		<div>
 			<input type="number" name="idprofesor" id="idprofesor" th:value="${cursohabilitado.idprofesor}">
 		</div>
-		<div th:if="${error != null && error.containsKey('idprofesor')}" th:text="${error.idprofesor}"></div>
+		<div th:if="${errores != null && errores.containsKey('idprofesor')}" th:text="${errores.idprofesor}"></div>
 	</div>
 	<div>
 		<div>
-			<input type="submit" value="Agregar">
+			<input type="submit" value="Habilitar">
 		</div>
 	</div>
 </form>

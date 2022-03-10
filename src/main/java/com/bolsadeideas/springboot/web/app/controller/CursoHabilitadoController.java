@@ -34,16 +34,16 @@ public class CursoHabilitadoController {
     }
 
     @GetMapping("/agregar")
-    public String agregar(Model model) {
+    public String agregarCurso(Model model) {
         CursoHabilitado cursohabilitado = new CursoHabilitado();
         model.addAttribute("titulo", "Habilitar Curso");
         model.addAttribute("cursohabilitado", cursohabilitado);
-        model.addAttribute("error", new HashMap<>());
+        model.addAttribute("errores", new HashMap<>());
         return "cursohabilitado-template/agregar";
     }
 
     @PostMapping("/agregar")
-    public String agregarProc(@Valid CursoHabilitado cursohabilitado, BindingResult result, Model model,
+    public String agregarCursoProc(@Valid CursoHabilitado cursohabilitado, BindingResult result, Model model,
                                    @RequestParam(name="idcurso") int idcurso,
                                    @RequestParam(name="idmateria") int idmateria,
                                    @RequestParam(name="idprofesor") int idprofesor) throws SQLException {
@@ -51,9 +51,11 @@ public class CursoHabilitadoController {
         if(result.hasErrors()) {
             Map<String, String> errores = new HashMap<>();
             result.getFieldErrors().forEach(err ->{
-                errores.put(err.getField(), "El campo ".concat(err.getField()).concat(" ").concat(err.getDefaultMessage()));
+                errores.put(err.getField(), "El campo ".concat(err.getField()).concat(" ").concat("no puede estar vacio, y debe se numero entero"));
             });
-            model.addAttribute("error", errores);
+            model.addAttribute("titulo", "Habilitar Curso");
+            model.addAttribute("cursohabilitado", cursohabilitado);
+            model.addAttribute("errores", errores);
             return "cursohabilitado-template/agregar";
         }
         CursoHabilitadoManager cursohabilitadoManager = new CursoHabilitadoManager();
@@ -67,7 +69,7 @@ public class CursoHabilitadoController {
         return "cursohabilitado-template/resultado";
     }
     @GetMapping("/buscar")
-    public String buscar(Model model) {
+    public String buscarCurso(Model model) {
         CursoHabilitado cursohabilitado = new CursoHabilitado();
         model.addAttribute("titulo", "Buscar Curso Habilitado");
         model.addAttribute("cursohabilitado", cursohabilitado);
@@ -76,30 +78,39 @@ public class CursoHabilitadoController {
     }
 
     @PostMapping("/buscar")
-    public String buscarPro(@Valid CursoHabilitado cursohabilitado, BindingResult result, Model model,
+    public String buscarCursoPro(@Valid CursoHabilitado cursohabilitado, BindingResult result, Model model,
                                  @RequestParam(name= "idcursohabilitado") int idcursohabilitado) throws SQLException {
 
         if(result.hasGlobalErrors()) {
             Map<String, String> errores = new HashMap<>();
             result.getFieldErrors().forEach(err ->{
-                errores.put(err.getField(), "El campo ".concat(err.getField()).concat(" ").concat(err.getDefaultMessage()));
+                errores.put(err.getField(), "El campo ".concat(err.getField()).concat(" ").concat("debe ser mayor a cero"));
             });
-            model.addAttribute("titulo", "Debe ser numero entero");
+            model.addAttribute("titulo", "Debe ser mayor a cero");
+            //model.addAttribute("cursohabilitado", cursohabilitado);
             model.addAttribute("error", errores);
             return "cursohabilitado-template/buscar";
         }
         CursoHabilitadoManager cursohabilitadoManager = new CursoHabilitadoManager();
         cursohabilitado = cursohabilitadoManager.getByid(idcursohabilitado);
-        model.addAttribute("idcursohabilitado", "ID Curso Habilitado");
-        model.addAttribute("idcurso", "ID Curso");
-        model.addAttribute("idmateria", "ID Materia");
-        model.addAttribute("titulo", "El curso esta habilitado");
-        model.addAttribute("cursohabilitado", cursohabilitado);
+        if(cursohabilitado==null){
+            model.addAttribute("idcursohabilitado", "");
+            model.addAttribute("idcurso", "");
+            model.addAttribute("idmateria", " ");
+            model.addAttribute("titulo", "No se encuentra habilitado o a ingresado 0");
+            model.addAttribute("cursohabilitado", cursohabilitado);
+        }
+        else{
+            model.addAttribute("idcursohabilitado", "ID Curso Habilitado");
+            model.addAttribute("idcurso", "ID Curso");
+            model.addAttribute("idmateria", "ID Materia");
+            model.addAttribute("titulo", "El curso esta habilitado");
+            model.addAttribute("cursohabilitado", cursohabilitado);
+        }
         return "cursohabilitado-template/resultado";
-
     }
     @GetMapping("/modificar")
-    public String modificar(Model model) {
+    public String modificarCurso(Model model) {
         CursoHabilitado cursohabilitado = new CursoHabilitado();
         model.addAttribute("titulo", "Modificar Curso Habilitado");
         model.addAttribute("cursohabilitado", cursohabilitado);
@@ -108,7 +119,7 @@ public class CursoHabilitadoController {
     }
 
     @PostMapping("/modificar")
-    public String modificar(@Valid CursoHabilitado cursohabilitado, BindingResult result, Model model,
+    public String modificarCursoProc(@Valid CursoHabilitado cursohabilitado, BindingResult result, Model model,
                             @RequestParam(name="idcursohabilitado") int idcursohabiltado,
                             @RequestParam(name="idcurso") int idcurso,
                             @RequestParam(name="idmateria") int idmateria,
@@ -117,7 +128,7 @@ public class CursoHabilitadoController {
         if(result.hasErrors()) {
             Map<String, String> errores = new HashMap<>();
             result.getFieldErrors().forEach(err ->{
-                errores.put(err.getField(), "El campo ".concat(err.getField()).concat(" ").concat(err.getDefaultMessage()));
+                errores.put(err.getField(), "El campo ".concat(err.getField()).concat(" ").concat("no puede estar vacio, y debe se numero entero"));
             });
             model.addAttribute("titulo", "Modificar Curso Habilitado");
             model.addAttribute("error", errores);
@@ -137,7 +148,7 @@ public class CursoHabilitadoController {
     }
 
     @GetMapping("/eliminar")
-    public String eliminar(Model model) {
+    public String eliminarCurso(Model model) {
         CursoHabilitado cursohabilitado = new CursoHabilitado();
         model.addAttribute("titulo", "Buscar Curso Habilitado");
         model.addAttribute("cursohabilitado", cursohabilitado);
@@ -146,13 +157,13 @@ public class CursoHabilitadoController {
     }
 
     @PostMapping("/eliminar")
-    public String eliminarPro(@Valid CursoHabilitado cursohabilitado, BindingResult result, Model model,
+    public String eliminarCursoPro(@Valid CursoHabilitado cursohabilitado, BindingResult result, Model model,
                             @RequestParam(name= "idcursohabilitado") int idcursohabilitado) throws SQLException {
 
         if(result.hasGlobalErrors()) {
             Map<String, String> errores = new HashMap<>();
             result.getFieldErrors().forEach(err ->{
-                errores.put(err.getField(), "El campo ".concat(err.getField()).concat(" ").concat(err.getDefaultMessage()));
+                errores.put(err.getField(), "El campo ".concat(err.getField()).concat(" ").concat("no puede estar vacio, y debe se numero entero"));
             });
             model.addAttribute("titulo", "Debe ser numero entero");
             model.addAttribute("error", errores);
